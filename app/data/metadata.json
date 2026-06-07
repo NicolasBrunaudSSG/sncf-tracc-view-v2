@@ -1,0 +1,25 @@
+{
+  "scenarios": [
+    "reference",
+    "2050",
+    "2065",
+    "2100"
+  ],
+  "aleas": [
+    "canicule",
+    "inondation",
+    "incendie",
+    "secheresse",
+    "glissement"
+  ],
+  "description": "TRACC View SNCF -- modèle H×E×V, pivot carroyage 1km² VETSD",
+  "version": "2.0.0-pivot",
+  "generated": "2026-06-07T15:28:55.310821",
+  "n_segments": 6090,
+  "n_pivot_cells": 57206,
+  "pivot_source": "DERNIERE VERSION (nouvelles formules).gpkg",
+  "methodology": "VETSD",
+  "crs_export": "EPSG:4326 (WGS84)",
+  "join_method": "sjoin_nearest centroïde segment -> cellule pivot Lambert 93",
+  "note": "Canicule/Inondation : H,E,V,R lus depuis le pivot (pré-calculés). Incendie : H=normalize(IFM40), E=S_lulc, V=V_rail. Sécheresse : H=normalize(SWI04), E=1.0. Glissement : H=0.5 (majorant conservateur), E=1.0."
+}

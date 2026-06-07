@@ -71,7 +71,7 @@ Le MVP doit permettre à un utilisateur de :
 
 ---
 
-# Sprint 0 — Cadrage technique et préparation
+# Sprint 0 — Cadrage technique et préparation ✅ TERMINÉ
 
 ## Objectif
 Préparer l’environnement projet, valider les choix techniques et cadrer les données nécessaires.
@@ -101,7 +101,7 @@ Préparer l’environnement projet, valider les choix techniques et cadrer les d
 
 ---
 
-# Sprint 1 — Socle cartographique
+# Sprint 1 — Socle cartographique ✅ TERMINÉ
 
 ## Objectif
 Mettre en place la carte interactive et les contrôles de base.
@@ -137,7 +137,7 @@ Mettre en place la carte interactive et les contrôles de base.
 
 ---
 
-# Sprint 2 — Affichage du réseau ferroviaire
+# Sprint 2 — Affichage du réseau ferroviaire ✅ TERMINÉ
 
 ## Objectif
 Afficher et masquer la couche du réseau national.
@@ -174,7 +174,9 @@ Afficher et masquer la couche du réseau national.
 
 ---
 
-# Sprint 3 — Sélection et affichage des infrastructures
+# Sprint 3 — Sélection et affichage des infrastructures ✅ TERMINÉ (adapté)
+
+> **Note d'adaptation :** L'affichage par dropdown unique a été remplacé par 4 cases à cocher indépendantes (gares, passerelles, ponts-route, ouvrages en terre) avec chargement lazy par type. Plusieurs types peuvent être activés simultanément.
 
 ## Objectif
 Permettre à l’utilisateur de choisir une catégorie d’infrastructure et de l’afficher sur la carte.
@@ -213,7 +215,9 @@ Permettre à l’utilisateur de choisir une catégorie d’infrastructure et de 
 
 ---
 
-# Sprint 4 — Panneau scénarios climatiques
+# Sprint 4 — Panneau scénarios climatiques ✅ TERMINÉ (adapté)
+
+> **Note d'adaptation :** L'horizon 2030 a été retiré (données non disponibles). Les horizons livrés sont 2050, 2065 et 2100.
 
 ## Objectif
 Mettre en place le panneau droit et la sélection des scénarios climatiques.
@@ -251,7 +255,9 @@ Mettre en place le panneau droit et la sélection des scénarios climatiques.
 
 ---
 
-# Sprint 5 — Sélection d’un indice climatique et option de croisement
+# Sprint 5 — Sélection d'un indice climatique et option de croisement ✅ TERMINÉ (adapté)
+
+> **Note d'adaptation :** Les aléas livrés sont **canicule** et **inondation** (données HEV disponibles). Le mode croisement permet de combiner deux aléas (seuils Q1 + Q2 indépendants).
 
 ## Objectif
 Permettre à l’utilisateur de sélectionner l’indice climatique et d’activer ou non le croisement.
@@ -289,7 +295,9 @@ Permettre à l’utilisateur de sélectionner l’indice climatique et d’activ
 
 ---
 
-# Sprint 6 — Seuil de risque et lancement de l’analyse
+# Sprint 6 — Seuil de risque et lancement de l'analyse ✅ TERMINÉ (adapté)
+
+> **Note d'adaptation :** Le seuil est saisi via un slider [0,1] (indice HEV normalisé) avec affichage de la valeur en temps réel. Le bouton "Afficher" appelle l'API backend `/api/hev/{scenario}/risk`.
 
 ## Objectif
 Permettre la saisie d’un seuil et déclencher l’analyse d’exposition.
@@ -331,7 +339,7 @@ Permettre la saisie d’un seuil et déclencher l’analyse d’exposition.
 
 ---
 
-# Sprint 7 — Croisement des données et mise en évidence des risques
+# Sprint 7 — Croisement des données et mise en évidence des risques ✅ TERMINÉ
 
 ## Objectif
 Calculer les infrastructures exposées et les afficher clairement sur la carte.
@@ -374,7 +382,7 @@ Calculer les infrastructures exposées et les afficher clairement sur la carte.
 
 ---
 
-# Sprint 8 — Nettoyage de la carte et stabilisation MVP
+# Sprint 8 — Nettoyage de la carte et stabilisation MVP ✅ TERMINÉ
 
 ## Objectif
 Finaliser le MVP en permettant à l’utilisateur de réinitialiser la carte et en stabilisant les principaux parcours.
@@ -537,3 +545,83 @@ Définir un ordre de couches, des niveaux de transparence et une charte de coule
 - Historique utilisateur.
 - Application mobile native.
 - Workflows de validation.
+---
+
+# Post-MVP — Sprints d'enrichissement
+
+---
+
+# Sprint Post-MVP 1 — Enrichissement visuel et données ✅ TERMINÉ
+
+## Objectif
+Améliorer la lisibilité cartographique et fiabiliser la donnée d'exposition des infrastructures.
+
+## User Stories couvertes
+- US-020 — Dégradé de couleur continu pour l'intensité du risque.
+- US-021 — Réseau ferroviaire toujours visible, grisé en mode risque.
+- US-022 — Enrichissement spatial des infrastructures par jointure au pivot HEV.
+- US-023 — Compteur d'infrastructures à risque dans le panneau gauche.
+
+## Fonctionnalités livrées
+- Gradient RVB continu `riskColor(val)` : vert → orange → rouge selon la valeur R ∈ [0,1].
+- Réseau ferroviaire toujours affiché (couleur bleue normale). Lorsqu'un risque est actif, les segments non filtrés passent en gris atténué (`#94A3B8`, opacité 0.35).
+- Seules les lignes dont la valeur R ≥ seuil sont colorées avec `riskColor()`.
+- Pipeline enrichi : jointure `sjoin_nearest` des centroides d'infra vers les cellules du pivot HEV — 5 colonnes R ajoutées à chaque GeoJSON d'infrastructure : `R_canicule_2050/2065/2100`, `R_inondation_2050/2065`.
+- Filtrage des infrastructures strictement par valeur R (fini la recherche par `rg_troncon`).
+- Compteur "[N] à risque" affiché dans le LeftPanel pour chaque type d'infra activé.
+- Mini-barre dégradé dans le RightPanel au-dessus du slider.
+- Modal d'introduction au chargement (`? Aide` pour la rouvrir).
+
+## Critères d'acceptation sprint
+- ✅ Couleurs cohérentes entre couche risque, couche infra et légende.
+- ✅ Réseau toujours lisible, même en mode risque.
+- ✅ Aucune infrastructure n'apparaît sur des lignes non exposées.
+- ✅ Le compteur infra correspond aux markers visibles sur la carte.
+
+---
+
+# Sprint Post-MVP 2 — Validation des données source ✅ TERMINÉ
+
+## Objectif
+Garantir la fiabilité des données HEV avec des tests de non-régression automatisés.
+
+## User Stories couvertes
+- US-024 — Tests de non-régression pipeline.
+
+## Fonctionnalités livrées
+- 9 tests automatisés dans `validate_sources.py` (S0-01 à S0-04, NR-01 à NR-05).
+- **S0** : intégrité des sources (fichier pivot présent, couche HEV lisible, CRS EPSG:2154, ≥ 1 cellule).
+- **NR-01** : le pivot contient exactement 57 206 cellules.
+- **NR-02** : les 23 colonnes requises sont présentes.
+- **NR-03** : la formule `R_can` est recalculée et correspond à 100 % au pivot.
+- **NR-04** : les maxima par horizon sont stables (±2 % vs valeurs de référence).
+- **NR-05** : toutes les valeurs `R_can` sont dans [0, 1].
+- Résultat : **9/9 PASS**.
+
+## Critères d'acceptation sprint
+- ✅ Tous les tests passent sur les données actuelles.
+- ✅ La formule `R_can_{hz} = (H_flamb×E_can×V_rail + H_cat×E_cat×V_cat) / max_hz` est documentée et vérifiée.
+
+---
+
+# Sprint Post-MVP 3 — Couche carroyage HEV ✅ TERMINÉ
+
+## Objectif
+Permettre à l'utilisateur de visualiser la grille HEV 1 km² en superposition optionnelle.
+
+## User Stories couvertes
+- US-025 — Masque graphique carroyage HEV.
+
+## Fonctionnalités livrées
+- Nouveau pipeline step 9 : export `carroyage_light.geojson` (57 206 cellules simplifiées, ~25 MB).
+- Endpoint `/api/carroyage` (FastAPI) : chargement au démarrage serveur, restitution à la demande.
+- Composant `CarroyageLayer.jsx` : polygones colorés par `riskColor()` selon l'aléa+horizon actif, tooltip avec toutes les valeurs R.
+- Toggle "Carroyage HEV 1km²" dans le LeftPanel avec chargement lazy (uniquement au premier clic).
+- Compteur de cellules chargées affiché dans le LeftPanel.
+- Icône dégradé miniature à côté du label.
+
+## Critères d'acceptation sprint
+- ✅ Le carroyage ne se charge que si le toggle est activé (pas de surcharge au démarrage).
+- ✅ La couleur des cellules est cohérente avec le gradient de la couche risque.
+- ✅ Les cellules sont semi-transparentes (réseau et fond de carte lisibles en dessous).
+- ✅ Le tooltip affiche les 5 valeurs R disponibles pour chaque cellule.
