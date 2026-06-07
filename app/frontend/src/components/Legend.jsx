@@ -15,7 +15,7 @@ function adaptiveNorm(val, stats) {
 }
 
 export default function Legend() {
-  const { threshold, riskStats, selectedAlea } = useApp()
+  const { threshold, riskStats, selectedAlea, showRightPanel } = useApp()
 
   // La barre représente l'échelle adaptive 0→1 (normalisé par quantiles)
   // Les stops correspondent aux 5 couleurs de la palette (0, 0.25, 0.5, 0.75, 1.0)
@@ -36,7 +36,10 @@ export default function Legend() {
     : ['1.0', '0.75', '0.50', '0.25', '0.0']
 
   return (
-    <div className="absolute bottom-8 right-2 z-[1000] bg-white/90 rounded shadow-md p-2 select-none pointer-events-none">
+    <div
+      className="absolute bottom-8 z-[1000] bg-white/90 rounded shadow-md p-2 select-none pointer-events-none transition-all duration-200"
+      style={{ right: showRightPanel ? '256px' : '8px' }}
+    >
       <div className="text-xs font-semibold text-gray-600 mb-1 text-center capitalize">{selectedAlea}</div>
       <div className="flex gap-1.5 items-stretch h-36">
         {/* Valeurs réelles gauche */}

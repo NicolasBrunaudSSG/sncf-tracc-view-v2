@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useApp } from '../AppContext.jsx'
-import { ALEAS_LABELS, SCENARIOS_LABELS } from '../utils.js'
+import { ALEAS_LABELS, SCENARIOS_LABELS, riskColor } from '../utils.js'
 import { fetchRiskStats } from '../services/dataService.js'
 
 export default function RightPanel({ onApply, onCross }) {
@@ -40,7 +40,10 @@ export default function RightPanel({ onApply, onCross }) {
   }
 
   return (
-    <div className="absolute top-16 right-2 z-[1000] bg-white rounded shadow-md p-4 w-60 max-h-[calc(100vh-5rem)] overflow-y-auto">
+    <div
+      className="absolute right-2 z-[1000] bg-white rounded shadow-md p-4 w-56 sm:w-60 max-h-[calc(100vh-5rem)] overflow-y-auto"
+      style={{ top: 'calc(48px + (100vh - 48px) / 2)', transform: 'translateY(-50%)' }}
+    >
       <h2 className="font-semibold text-sm text-gray-700 mb-3" id="scenarios-label">Scénarios climatiques</h2>
 
       {Object.entries(SCENARIOS_LABELS).map(([key, label]) => (
@@ -98,7 +101,7 @@ export default function RightPanel({ onApply, onCross }) {
       <div className="h-3 rounded mb-1"
         id="seuil-desc"
         aria-hidden="true"
-        style={{ background: 'linear-gradient(to right, #2ECC71, #F39C12, #E74C3C)' }}
+        style={{ background: `linear-gradient(to right, ${[0, 0.25, 0.5, 0.75, 1].map(v => riskColor(v)).join(', ')})` }}
       />
       <div className="flex justify-between text-xs text-gray-400 mb-2">
         <span>0</span><span>0.5</span><span>1</span>

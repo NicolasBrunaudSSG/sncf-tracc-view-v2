@@ -41,7 +41,8 @@ export default function LeftPanel({ onInfraToggle, onCarroyageToggle }) {
 
   return (
     <div
-      className="absolute top-16 left-2 z-[1000] bg-white rounded shadow-md p-3 w-52 max-h-[calc(100vh-5rem)] overflow-y-auto"
+      className="absolute left-2 z-[1000] bg-white rounded shadow-md p-3 w-48 sm:w-52 max-h-[calc(100vh-5rem)] overflow-y-auto"
+      style={{ top: 'calc(48px + (100vh - 48px) / 2)', transform: 'translateY(-50%)' }}
       role="region"
       aria-label="Panneau de couches cartographiques"
     >
