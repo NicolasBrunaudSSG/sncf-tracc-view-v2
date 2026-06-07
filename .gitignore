@@ -1,14 +1,10 @@
 # ── Données sources (volumineuses / confidentielles) ──────────────────────────
 inputs/
 
-# ── GeoJSON générés (potentiellement > 100 Mo) ────────────────────────────────
-app/data/*.geojson
+# ── GeoPackages sources (volumineuses) ───────────────────────────────────────
 app/data/*.gpkg
-# Infra GeoJSON (téléchargés depuis SNCF Open Data — jusqu'à 48 Mo)
-app/data/infra/
-# Conserver metadata.json et la structure du dossier
+# Conserver la structure du dossier
 !app/data/.gitkeep
-!app/data/metadata.json
 
 # ── Python ────────────────────────────────────────────────────────────────────
 .venv/
