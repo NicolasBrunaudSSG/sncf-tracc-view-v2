@@ -7,11 +7,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), tailwindcss()],
-    base: isPages ? '/SNCF-Tracc-View/' : '/',
+    base: isPages ? '/sncf-tracc-view-v2/' : '/',
     define: isPages
       ? {
           'import.meta.env.VITE_DATA_MODE': JSON.stringify('static'),
-          'import.meta.env.VITE_DATA_BASE': JSON.stringify('/SNCF-Tracc-View/data'),
+          'import.meta.env.VITE_DATA_BASE': JSON.stringify('/sncf-tracc-view-v2/data'),
         }
       : {},
     server: {
