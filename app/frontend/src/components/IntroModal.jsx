@@ -73,6 +73,19 @@ export default function IntroModal({ onClose }) {
           Données CEREMA TRACC 2023 · ALADIN63/CNRM-CM5 · Réseau ferré national SNCF Réseau
         </p>
 
+        <div className="flex items-center justify-end gap-4 mb-4 pt-2 border-t border-gray-100">
+          <img
+            src="logo-sopra-steria.svg"
+            alt="Sopra Steria"
+            className="h-6 object-contain"
+          />
+          <img
+            src="logo-enpc.png"
+            alt="École des Ponts ParisTech"
+            className="h-7 object-contain"
+          />
+        </div>
+
         <button
           ref={closeBtnRef}
           type="button"
