@@ -25,6 +25,13 @@ export function AppProvider({ children }) {
   })
   const [infraData, setInfraData] = useState({})
 
+  // Statistiques de distribution du risque (pour le remapping adaptatif)
+  const [riskStats, setRiskStats] = useState(null)
+
+  // Visibilité des volets latéraux
+  const [showLeftPanel, setShowLeftPanel] = useState(true)
+  const [showRightPanel, setShowRightPanel] = useState(true)
+
   // Modal d'intro
   const [showIntro, setShowIntro] = useState(true)
 
@@ -45,6 +52,9 @@ export function AppProvider({ children }) {
       crossQ, setCrossQ,
       infraVisible, setInfraVisible,
       infraData, setInfraData,
+      riskStats, setRiskStats,
+      showLeftPanel, setShowLeftPanel,
+      showRightPanel, setShowRightPanel,
       showIntro, setShowIntro,
       showCarroyage, setShowCarroyage,
       carroyageData, setCarroyageData,

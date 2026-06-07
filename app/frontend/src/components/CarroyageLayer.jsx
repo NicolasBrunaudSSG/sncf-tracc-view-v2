@@ -1,5 +1,6 @@
+import { useMemo } from 'react'
 import { GeoJSON } from 'react-leaflet'
-import { riskColor } from '../utils.js'
+import { riskColorAdaptive, computeStats } from '../utils.js'
 
 // Colonnes R disponibles dans le carroyage allégé
 // Format: "R_canicule_2050", "R_canicule_2065", "R_canicule_2100",
@@ -13,9 +14,13 @@ export default function CarroyageLayer({ data, alea, scenario }) {
   if (!data || !data.features || data.features.length === 0) return null
 
   const prefix = ALEA_R_PREFIX[alea]
-  // Pour incendie/secheresse/glissement, pas de R pré-calculé dans le carroyage
-  // on affiche les cellules avec une couleur neutre
   const riskKey = (prefix && scenario !== 'reference') ? `${prefix}_${scenario}` : null
+
+  // Calcul des stats adaptatif sur les cellules du carroyage
+  const stats = useMemo(
+    () => riskKey ? computeStats(data.features, riskKey) : null,
+    [data.features, riskKey]
+  )
 
   return (
     <GeoJSON
@@ -24,7 +29,7 @@ export default function CarroyageLayer({ data, alea, scenario }) {
       style={(feature) => {
         const val = riskKey ? (feature.properties[riskKey] ?? 0) : 0
         return {
-          fillColor: val > 0 ? riskColor(val) : '#94A3B8',
+          fillColor: val > 0 ? riskColorAdaptive(val, stats) : '#94A3B8',
           fillOpacity: val > 0 ? 0.35 : 0.08,
           color: '#64748B',
           weight: 0.3,

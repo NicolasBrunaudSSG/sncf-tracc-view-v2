@@ -8,6 +8,8 @@
  *   → lecture des fichiers JSON dans /data/* + filtrage côté client
  */
 
+import { computeStats } from '../utils.js'
+
 const MODE = import.meta.env.VITE_DATA_MODE ?? 'api'
 const BASE = import.meta.env.VITE_DATA_BASE ?? '/data'
 
@@ -110,6 +112,22 @@ export async function fetchInfra(type) {
   const file = INFRA_FILES[type]
   if (!file) throw new Error(`Type infra inconnu : ${type}`)
   return _fetchStatic(`infra_${type}`, `${BASE}/infra/${file}`)
+}
+
+/**
+ * Retourne les statistiques de distribution (min/Q25/Q50/Q75/max)
+ * pour un aléa donné sur un scénario, sans appliquer de seuil.
+ * Utilise le cache HEV statique ou appelle l'API avec threshold=0.
+ */
+export async function fetchRiskStats(scenario, alea) {
+  if (MODE === 'api') {
+    const r = await fetch(`/api/hev/${scenario}/risk?alea=${alea}&threshold=0`)
+    if (!r.ok) return null
+    const data = await r.json()
+    return computeStats(data.features, `R_${alea}`)
+  }
+  const hev = await _fetchStatic(`hev_${scenario}`, `${BASE}/hev_${scenario}.geojson`)
+  return computeStats(hev.features, `R_${alea}`)
 }
 
 export async function fetchCarroyage() {

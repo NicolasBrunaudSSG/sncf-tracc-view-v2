@@ -13,6 +13,8 @@ function AppInner() {
   const [loadError, setLoadError] = useState(null)
   const {
     showIntro, setShowIntro,
+    showLeftPanel, setShowLeftPanel,
+    showRightPanel, setShowRightPanel,
     riskFeatures, setRiskFeatures,
     crossData, setCrossData,
     infraData, setInfraData,
@@ -94,8 +96,32 @@ function AppInner() {
         <Legend />
       </div>
 
-      <LeftPanel onInfraToggle={handleInfraToggle} onCarroyageToggle={handleCarroyageToggle} />
-      <RightPanel onApply={handleApply} onCross={handleCross} />
+      {showLeftPanel && <LeftPanel onInfraToggle={handleInfraToggle} onCarroyageToggle={handleCarroyageToggle} />}
+
+      {/* Bouton toggle volet gauche */}
+      <button
+        type="button"
+        onClick={() => setShowLeftPanel(v => !v)}
+        aria-label={showLeftPanel ? 'Masquer le volet gauche' : 'Afficher le volet gauche'}
+        className="absolute top-1/2 -translate-y-1/2 z-[1001] bg-white border border-gray-200 shadow rounded-r px-1 py-3 text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all"
+        style={{ left: showLeftPanel ? '176px' : '0px' }}
+      >
+        <span className="text-xs leading-none select-none">{showLeftPanel ? '◀' : '▶'}</span>
+      </button>
+
+      {/* Bouton toggle volet droit */}
+      <button
+        type="button"
+        onClick={() => setShowRightPanel(v => !v)}
+        aria-label={showRightPanel ? 'Masquer le volet droit' : 'Afficher le volet droit'}
+        className="absolute top-1/2 -translate-y-1/2 z-[1001] bg-white border border-gray-200 shadow rounded-l px-1 py-3 text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all"
+        style={{ right: showRightPanel ? '248px' : '0px' }}
+      >
+        <span className="text-xs leading-none select-none">{showRightPanel ? '▶' : '◀'}</span>
+      </button>
+
+      {showRightPanel && <RightPanel onApply={handleApply} onCross={handleCross} />
+      }
       <ClearButton />
     </div>
   )

@@ -1,7 +1,9 @@
 import { GeoJSON } from 'react-leaflet'
-import { riskColor } from '../utils.js'
+import { riskColorAdaptive } from '../utils.js'
+import { useApp } from '../AppContext.jsx'
 
 export default function RiskLayer({ data, alea }) {
+  const { riskStats } = useApp()
   if (!data || !data.features || data.features.length === 0) return null
 
   const riskKey = `R_${alea}`
@@ -13,7 +15,7 @@ export default function RiskLayer({ data, alea }) {
       style={(feature) => {
         const val = feature.properties[riskKey] ?? 0
         return {
-          color: riskColor(val),
+          color: riskColorAdaptive(val, riskStats),
           weight: 3,
           opacity: 0.9,
         }

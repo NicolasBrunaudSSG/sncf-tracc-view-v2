@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useApp } from '../AppContext.jsx'
 import { ALEAS_LABELS, SCENARIOS_LABELS } from '../utils.js'
+import { fetchRiskStats } from '../services/dataService.js'
 
 export default function RightPanel({ onApply, onCross }) {
   const {
@@ -10,10 +11,22 @@ export default function RightPanel({ onApply, onCross }) {
     crossAlea1, setCrossAlea1,
     crossAlea2, setCrossAlea2,
     crossQ, setCrossQ,
+    riskStats, setRiskStats,
   } = useApp()
 
   const [inputThreshold, setInputThreshold] = useState(String(threshold))
   const [showCross, setShowCross] = useState(false)
+  const [loadingStats, setLoadingStats] = useState(false)
+
+  // Charger les stats dès que scénario ou aléa change
+  useEffect(() => {
+    setLoadingStats(true)
+    setRiskStats(null)
+    fetchRiskStats(selectedScenario, selectedAlea)
+      .then((s) => setRiskStats(s))
+      .catch(() => setRiskStats(null))
+      .finally(() => setLoadingStats(false))
+  }, [selectedScenario, selectedAlea])
 
   function handleApply() {
     const val = parseFloat(inputThreshold)
@@ -87,9 +100,53 @@ export default function RightPanel({ onApply, onCross }) {
         aria-hidden="true"
         style={{ background: 'linear-gradient(to right, #2ECC71, #F39C12, #E74C3C)' }}
       />
-      <div className="flex justify-between text-xs text-gray-400 mb-3">
+      <div className="flex justify-between text-xs text-gray-400 mb-2">
         <span>0</span><span>0.5</span><span>1</span>
       </div>
+
+      {/* ─── Aide contextuelle quantiles ──────────────────────────────── */}
+      {loadingStats && (
+        <div className="text-xs text-gray-400 italic mb-3">Calcul des quantiles…</div>
+      )}
+      {!loadingStats && riskStats && (
+        <div className="bg-gray-50 rounded p-2 mb-3 text-xs">
+          <div className="flex justify-between text-gray-500 mb-1.5">
+            <span>min</span>
+            <span className="text-blue-500 font-medium">Q25</span>
+            <span className="text-orange-500 font-medium">Q50</span>
+            <span className="text-red-500 font-medium">Q75</span>
+            <span>max</span>
+          </div>
+          <div className="flex justify-between text-gray-700 font-mono mb-2">
+            <span>{riskStats.min.toFixed(3)}</span>
+            <button
+              type="button"
+              title="Utiliser Q25 comme seuil"
+              onClick={() => setInputThreshold(riskStats.q25.toFixed(3))}
+              className="text-blue-600 hover:underline font-medium"
+            >{riskStats.q25.toFixed(3)}</button>
+            <button
+              type="button"
+              title="Utiliser Q50 comme seuil"
+              onClick={() => setInputThreshold(riskStats.q50.toFixed(3))}
+              className="text-orange-500 hover:underline font-medium"
+            >{riskStats.q50.toFixed(3)}</button>
+            <button
+              type="button"
+              title="Utiliser Q75 comme seuil"
+              onClick={() => setInputThreshold(riskStats.q75.toFixed(3))}
+              className="text-red-500 hover:underline font-medium"
+            >{riskStats.q75.toFixed(3)}</button>
+            <span>{riskStats.max.toFixed(3)}</span>
+          </div>
+          <div className="text-gray-400 text-center">
+            {riskStats.count.toLocaleString('fr-FR')} segments · cliquer pour appliquer
+          </div>
+        </div>
+      )}
+      {!loadingStats && !riskStats && (
+        <div className="text-xs text-gray-400 italic mb-3">Aucune donnée de risque disponible</div>
+      )}
 
       <hr className="mb-3" />
 
