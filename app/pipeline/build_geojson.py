@@ -258,6 +258,7 @@ PIVOT_R_MAP = {
     "R_can_2100":   "R_canicule_2100",
     "R_inond_2050": "R_inondation_2050",
     "R_inond_2065": "R_inondation_2065",
+    "R_inond_2100": "R_inondation_2100",
 }
 pivot_r_cols = [c for c in PIVOT_R_MAP if c in pivot.columns]
 pivot_r = pivot[["geometry"] + pivot_r_cols].copy()
