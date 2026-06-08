@@ -19,8 +19,8 @@ export default function Legend() {
 
   // La barre représente l'échelle adaptive 0→1 (normalisé par quantiles)
   // Les stops correspondent aux 5 couleurs de la palette (0, 0.25, 0.5, 0.75, 1.0)
-  const gradientStops = [1, 0.75, 0.5, 0.25, 0]
-    .map((v) => `${riskColor(v)} ${((1 - v) * 100).toFixed(0)}%`)
+  const gradientStops = [0, 0.25, 0.5, 0.75, 1]
+    .map((v) => `${riskColor(v)} ${(v * 100).toFixed(0)}%`)
     .join(', ')
 
   // Position du marqueur : même remapping que sur la carte
