@@ -40,27 +40,12 @@ jobs:
         working-directory: app/frontend
         run: npm run build:pages
 
-      - name: Copy GeoJSON data files into dist/data
+      - name: Hash GeoJSON data files and generate manifest
         run: |
-          mkdir -p app/frontend/dist/data/infra
-          # Réseau et HEV
-          for f in reseau_national.geojson hev_reference.geojson hev_2050.geojson hev_2065.geojson hev_2100.geojson carroyage_light.geojson metadata.json; do
-            if [ -f "app/data/$f" ]; then
-              cp "app/data/$f" "app/frontend/dist/data/$f"
-              echo "Copied $f ($(du -sh app/data/$f | cut -f1))"
-            else
-              echo "WARN: $f not found in app/data — skipping"
-            fi
-          done
-          # Infrastructures
-          for f in liste-des-gares.geojson liste-des-passerelles.geojson liste-des-ponts-route.geojson liste-ouvrages-en-terre.geojson; do
-            if [ -f "app/data/infra/$f" ]; then
-              cp "app/data/infra/$f" "app/frontend/dist/data/infra/$f"
-              echo "Copied infra/$f"
-            fi
-          done
-          echo "--- Taille totale dist/data ---"
-          du -sh app/frontend/dist/data/ || true
+          node app/frontend/scripts/hash-data.js app/data app/frontend/dist/data
+          echo "--- Contenu dist/data ---"
+          ls app/frontend/dist/data/
+          cat app/frontend/dist/data/manifest.json
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

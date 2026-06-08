@@ -13,6 +13,40 @@ import { computeStats } from '../utils.js'
 const MODE = import.meta.env.VITE_DATA_MODE ?? 'api'
 const BASE = import.meta.env.VITE_DATA_BASE ?? '/data'
 
+// ─── Manifest (résolution des noms hachés en mode statique) ──────────────────
+
+let _manifest = null
+
+async function _getManifest() {
+  if (_manifest) return _manifest
+  try {
+    const r = await fetch(`${BASE}/manifest.json`, { cache: 'no-store' })
+    if (r.ok) {
+      _manifest = await r.json()
+    }
+  } catch {
+    _manifest = {}
+  }
+  return _manifest ?? {}
+}
+
+/**
+ * Résout le nom réel d'un fichier data depuis le manifest.
+ * Si le manifest n'a pas de hash pour cette clé, on retombe sur le nom original.
+ */
+async function _resolveUrl(logicalKey, fallbackName) {
+  const manifest = await _getManifest()
+  const hashedName = manifest[logicalKey]
+  const name = hashedName ?? fallbackName
+  // infra/ prefix est déjà dans la clé du manifest
+  if (logicalKey.startsWith('infra/')) {
+    const subdir = 'infra/'
+    const fileName = name
+    return `${BASE}/${subdir}${fileName}`
+  }
+  return `${BASE}/${name}`
+}
+
 // ─── Cache local (mode static) ────────────────────────────────────────────────
 
 const _localCache = {}
@@ -63,7 +97,8 @@ export async function fetchReseau() {
     if (!r.ok) throw new Error(`HTTP ${r.status}`)
     return r.json()
   }
-  return _fetchStatic('reseau', `${BASE}/reseau_national.geojson`)
+  const url = await _resolveUrl('reseau_national', 'reseau_national.geojson')
+  return _fetchStatic('reseau', url)
 }
 
 export async function fetchRisk(scenario, alea, threshold) {
@@ -75,7 +110,8 @@ export async function fetchRisk(scenario, alea, threshold) {
     }
     return r.json()
   }
-  const hev = await _fetchStatic(`hev_${scenario}`, `${BASE}/hev_${scenario}.geojson`)
+  const url = await _resolveUrl(`hev_${scenario}`, `hev_${scenario}.geojson`)
+  const hev = await _fetchStatic(`hev_${scenario}`, url)
   const features = _filterRisk(hev.features, alea, scenario, threshold)
   return { type: 'FeatureCollection', features }
 }
@@ -91,7 +127,8 @@ export async function fetchCross(scenario, alea1, alea2, q1, q2) {
     }
     return r.json()
   }
-  const hev = await _fetchStatic(`hev_${scenario}`, `${BASE}/hev_${scenario}.geojson`)
+  const url = await _resolveUrl(`hev_${scenario}`, `hev_${scenario}.geojson`)
+  const hev = await _fetchStatic(`hev_${scenario}`, url)
   const features = _filterCross(hev.features, alea1, alea2, q1, q2)
   return { type: 'FeatureCollection', features }
 }
@@ -111,7 +148,9 @@ export async function fetchInfra(type) {
   }
   const file = INFRA_FILES[type]
   if (!file) throw new Error(`Type infra inconnu : ${type}`)
-  return _fetchStatic(`infra_${type}`, `${BASE}/infra/${file}`)
+  const stem = file.replace('.geojson', '')
+  const url = await _resolveUrl(`infra/${stem}`, file).then(u => u)
+  return _fetchStatic(`infra_${type}`, url)
 }
 
 /**
@@ -126,7 +165,8 @@ export async function fetchRiskStats(scenario, alea) {
     const data = await r.json()
     return computeStats(data.features, `R_${alea}`)
   }
-  const hev = await _fetchStatic(`hev_${scenario}`, `${BASE}/hev_${scenario}.geojson`)
+  const url = await _resolveUrl(`hev_${scenario}`, `hev_${scenario}.geojson`)
+  const hev = await _fetchStatic(`hev_${scenario}`, url)
   return computeStats(hev.features, `R_${alea}`)
 }
 
@@ -136,5 +176,6 @@ export async function fetchCarroyage() {
     if (!r.ok) throw new Error(`HTTP ${r.status}`)
     return r.json()
   }
-  return _fetchStatic('carroyage', `${BASE}/carroyage_light.geojson`)
+  const url = await _resolveUrl('carroyage_light', 'carroyage_light.geojson')
+  return _fetchStatic('carroyage', url)
 }
