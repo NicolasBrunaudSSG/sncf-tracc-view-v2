@@ -77,11 +77,15 @@ export default function IntroModal({ onClose }) {
           <img
             src="logo-sopra-steria.svg"
             alt="Sopra Steria"
+            width="120"
+            height="24"
             className="h-6 object-contain"
           />
           <img
             src="logo-enpc.png"
             alt="École des Ponts ParisTech"
+            width="108"
+            height="28"
             className="h-7 object-contain"
           />
         </div>

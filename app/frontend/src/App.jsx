@@ -91,7 +91,13 @@ function AppInner() {
         </button>
       </div>
 
-      <div className="absolute top-12 bottom-0 left-0 right-0">
+      {/* Zone carte : taille explicite pour éviter CLS au chargement des GeoJSON */}
+      <div className="absolute top-12 bottom-0 left-0 right-0" style={{ contain: 'strict' }}>
+        {!reseauData && !loadError && (
+          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
+            <span className="text-gray-400 text-sm">Chargement de la carte…</span>
+          </div>
+        )}
         <MapView reseauData={reseauData} riskData={riskFeatures} crossData={crossData} />
         <Legend />
       </div>
